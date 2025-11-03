@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Personal Headache Manager - Track your finances month by month">
+    <title>Headache Manager</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Money%20bag/3D/money_bag_3d.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            min-height: 90vh;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 30px;
+            min-height: 90vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .login-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 16px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .google-btn {
+            background: white;
+            color: #333;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .google-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .google-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Initial Balance Screen */
+        .initial-balance-screen {
+            display: none;
+            padding: 40px 30px;
+            min-height: 90vh;
+            background: white;
+        }
+
+        .initial-balance-screen h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .initial-balance-screen p {
+            color: #6c757d;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .initial-balance-icon {
+            font-size: 80px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Main App */
+        .main-app {
+            display: none;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px 40px;
+            color: white;
+            position: relative;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .balance-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .balance-details {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+        }
+
+        .balance-item {
+            flex: 1;
+        }
+
+        .balance-item-label {
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .balance-item-value {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* Content */
+        .content {
+            padding: 20px;
+        }
+
+        .month-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .month-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .month-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-value.income {
+            color: #28a745;
+        }
+
+        .stat-value.expense {
+            color: #dc3545;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .add-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .transaction-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: box-shadow 0.2s;
+            position: relative;
+        }
+
+        .transaction-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .transaction-date {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .transaction-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .transaction-amount {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .transaction-amount.income {
+            color: #28a745;
+        }
+
+        .transaction-amount.expense {
+            color: #dc3545;
+        }
+
+        .transaction-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .action-btn.edit:hover {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+
+        .action-btn.delete:hover {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .finalize-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .finalize-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        .finalize-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 24px 24px 0 0;
+            padding: 24px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            width: 100%;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Login Screen -->
+        <div class="login-screen" id="loginScreen">
+            <div class="logo">💰</div>
+            <h1 class="login-title">Headache Manager</h1>
+            <p class="login-subtitle">Track your finances with ease<br>Month by month control</p>
+            <button class="google-btn" onclick="AuthModule.signInWithGoogle()">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+        </div>
+
+        <!-- Initial Balance Screen -->
+        <div class="initial-balance-screen" id="initialBalanceScreen">
+            <div class="initial-balance-icon">💵</div>
+            <h2>Welcome to Headache Manager!</h2>
+            <p>Let's start by recording how much money you have right now. This will be your starting balance for this month.</p>
+            <form id="initialBalanceForm">
+                <div class="form-group">
+                    <label class="form-label">Initial Balance (৳)</label>
+                    <input type="number" class="form-input" id="initialBalance" placeholder="Enter amount" step="0.01" required autofocus>
+                </div>
+                <button type="submit" class="submit-btn">Start Tracking</button>
+            </form>
+        </div>
+
+        <!-- Main App -->
+        <div class="main-app" id="mainApp">
+            <div class="header">
+                <div class="user-info">
+                    <img src="" alt="User" class="user-avatar" id="userAvatar">
+                    <button class="logout-btn" onclick="AuthModule.signOut()">Logout</button>
+                </div>
+                <div class="balance-card">
+                    <div class="balance-label">Overall Balance</div>
+                    <div class="balance-amount" id="overallBalance">৳0.00</div>
+                    <div class="balance-details">
+                        <div class="balance-item">
+                            <div class="balance-item-label">Total Income</div>
+                            <div class="balance-item-value" id="totalIncome">৳0</div>
+                        </div>
+                        <div class="balance-item">
+                            <div class="balance-item-label">Total Expenses</div>
+                            <div class="balance-item-value" id="totalExpenses">৳0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="month-selector">
+                    <div class="month-name" id="currentMonth">November 2025</div>
+                    <div class="month-nav">
+                        <button class="nav-btn" onclick="NavigationModule.prevMonth()">‹</button>
+                        <button class="nav-btn" onclick="NavigationModule.nextMonth()">›</button>
+                    </div>
+                </div>
+
+                <div id="alertContainer"></div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Start Balance</div>
+                        <div class="stat-value" id="startBalance">৳0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Month Income</div>
+                        <div class="stat-value income" id="monthIncome">৳0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Available Balance</div>
+                        <div class="stat-value" style="color: #17a2b8;" id="availableBalance">৳0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">End Balance</div>
+                        <div class="stat-value" id="endBalance">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Monthly Cost</div>
+                        <div class="stat-value expense" id="monthlyCost">৳0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Untracked</div>
+                        <div class="stat-value" id="untracked">৳0</div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h3 class="section-title">Income</h3>
+                    <button class="add-btn" onclick="TransactionModule.openModal('income')">+</button>
+                </div>
+                <div class="transaction-list" id="incomeList">
+                    <div class="empty-state">
+                        <div class="empty-icon">📥</div>
+                        <p>No income recorded yet</p>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h3 class="section-title">Expenses</h3>
+                    <button class="add-btn" onclick="TransactionModule.openModal('expense')">+</button>
+                </div>
+                <div class="transaction-list" id="expenseList">
+                    <div class="empty-state">
+                        <div class="empty-icon">📤</div>
+                        <p>No expenses recorded yet</p>
+                    </div>
+                </div>
+
+                <button class="finalize-btn" id="finalizeBtn" onclick="MonthModule.finalizeMonth()">Finalize Month</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add Transaction</h3>
+                <button class="close-btn" onclick="TransactionModule.closeModal()">×</button>
+            </div>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" id="transactionName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount (৳)</label>
+                    <input type="number" class="form-input" id="transactionAmount" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" id="transactionDate" required>
+                </div>
+                <button type="submit" class="submit-btn" id="submitBtn">Add Transaction</button>
+                <button type="button" class="delete-btn" id="deleteBtn" style="display: none;" onclick="TransactionModule.deleteTransaction()">Delete Transaction</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as firebaseSignOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Firebase configuration - REPLACE WITH YOUR CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyCwNYkyO2TZ1Ddny9BKe9-FrAg-5iYVluc",
+            authDomain: "headache-ad83c.firebaseapp.com",
+            projectId: "headache-ad83c",
+            storageBucket: "headache-ad83c.firebasestorage.app",
+            messagingSenderId: "113381793764",
+            appId: "1:113381793764:web:ffe40c14c330fcc4d4b1f1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // ==================== DATA MODULE ====================
+        const DataModule = {
+            currentUser: null,
+            appData: {
+                months: [],
+                currentMonthIndex: 0
+            },
+
+            saveData() {
+                if (!this.currentUser) return;
+                localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+            },
+
+            loadData() {
+                if (!this.currentUser) return false;
+                const saved = localStorage.getItem(`moneyManager_${this.currentUser.uid}`);
+                if (saved) {
+                    this.appData = JSON.parse(saved);
+                    return true;
+                }
+                return false;
+            },
+
+            initializeFirstMonth(initialBalance) {
+                const now = new Date();
+                this.appData.months = [{
+                    month: now.getMonth(),
+                    year: now.getFullYear(),
+                    startBalance: initialBalance,
+                    endBalance: null,
+                    income: [],
+                    expenses: [],
+                    finalized: false
+                }];
+                this.saveData();
+            },
+
+            getCurrentMonth() {
+                return this.appData.months[this.appData.currentMonthIndex];
+            },
+
+            addTransaction(type, transaction) {
+                const month = this.getCurrentMonth();
+                if (type === 'income') {
+                    month.income.push(transaction);
+                } else {
+                    month.expenses.push(transaction);
+                }
+                this.saveData();
+            },
+
+            updateTransaction(type, index, transaction) {
+                const month = this.getCurrentMonth();
+                if (type === 'income') {
+                    month.income[index] = transaction;
+                } else {
+                    month.expenses[index] = transaction;
+                }
+                this.saveData();
+            },
+
+            deleteTransaction(type, index) {
+                const month = this.getCurrentMonth();
+                if (type === 'income') {
+                    month.income.splice(index, 1);
+                } else {
+                    month.expenses.splice(index, 1);
+                }
+                this.saveData();
+            }
+        };
+
+        // ==================== AUTH MODULE ====================
+        window.AuthModule = {
+            // ADD YOUR EMAIL HERE - Only this email can access the app
+            ALLOWED_EMAIL: 'your-email@gmail.com', // ⚠️ CHANGE THIS TO YOUR EMAIL
+
+            async signInWithGoogle() {
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    
+                    // Check if user is authorized
+                    if (result.user.email !== this.ALLOWED_EMAIL) {
+                        await firebaseSignOut(auth);
+                        alert('⛔ Access Denied! This app is for personal use only.');
+                        return;
+                    }
+                    
+                    DataModule.currentUser = result.user;
+                    this.checkFirstTimeUser();
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('Login failed. Please try again.');
+                }
+            },
+
+            async signOut() {
+                try {
+                    await firebaseSignOut(auth);
+                    document.getElementById('loginScreen').style.display = 'flex';
+                    document.getElementById('mainApp').style.display = 'none';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            },
+
+            checkFirstTimeUser() {
+                const hasData = DataModule.loadData();
+                if (!hasData) {
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('initialBalanceScreen').style.display = 'block';
+                } else {
+                    this.loadApp();
+                }
+            },
+
+            loadApp() {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('initialBalanceScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('userAvatar').src = DataModule.currentUser.photoURL || 'https://via.placeholder.com/40';
+                UIModule.renderApp();
+            }
+        };
+
+        // ==================== CALCULATION MODULE ====================
+        const CalculationModule = {
+            calculateMonthStats(month) {
+                const totalIncome = month.income.reduce((sum, t) => sum + t.amount, 0);
+                const totalExpenses = month.expenses.reduce((sum, t) => sum + t.amount, 0);
+                const availableBalance = month.startBalance + totalIncome;
+                const monthlyCost = month.endBalance !== null ? availableBalance - month.endBalance : 0;
+                const untracked = month.endBalance !== null ? monthlyCost - totalExpenses : 0;
+
+                return { totalIncome, totalExpenses, availableBalance, monthlyCost, untracked };
+            },
+
+            calculateOverallBalance() {
+                let overallBalance = 0;
+                let allIncome = 0;
+                let allExpenses = 0;
+                
+                let lastFinalizedIndex = -1;
+                for (let i = DataModule.appData.months.length - 1; i >= 0; i--) {
+                    if (DataModule.appData.months[i].finalized && DataModule.appData.months[i].endBalance !== null) {
+                        lastFinalizedIndex = i;
+                        break;
+                    }
+                }
+
+                if (lastFinalizedIndex >= 0) {
+                    overallBalance = DataModule.appData.months[lastFinalizedIndex].endBalance;
+                    
+                    for (let i = lastFinalizedIndex + 1; i < DataModule.appData.months.length; i++) {
+                        const m = DataModule.appData.months[i];
+                        const mIncome = m.income.reduce((sum, t) => sum + t.amount, 0);
+                        const mExpenses = m.expenses.reduce((sum, t) => sum + t.amount, 0);
+                        overallBalance += mIncome - mExpenses;
+                    }
+                } else {
+                    DataModule.appData.months.forEach(m => {
+                        const mIncome = m.income.reduce((sum, t) => sum + t.amount, 0);
+                        const mExpenses = m.expenses.reduce((sum, t) => sum + t.amount, 0);
+                        overallBalance += m.startBalance + mIncome - mExpenses;
+                    });
+                }
+
+                DataModule.appData.months.forEach(m => {
+                    allIncome += m.income.reduce((sum, t) => sum + t.amount, 0);
+                    allExpenses += m.expenses.reduce((sum, t) => sum + t.amount, 0);
+                });
+
+                return { overallBalance, allIncome, allExpenses };
+            }
+        };
+
+        // ==================== UI MODULE ====================
+        const UIModule = {
+            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'],
+
+            renderApp() {
+                const month = DataModule.getCurrentMonth();
+                if (!month) return;
+
+                this.renderMonthHeader(month);
+                this.renderStats(month);
+                this.renderOverallBalance();
+                this.renderAlertAndButton(month);
+                this.renderTransactions(month);
+            },
+
+            renderMonthHeader(month) {
+                document.getElementById('currentMonth').textContent = 
+                    `${this.monthNames[month.month]} ${month.year}`;
+            },
+
+            renderStats(month) {
+                const stats = CalculationModule.calculateMonthStats(month);
+                
+                document.getElementById('startBalance').textContent = `৳${month.startBalance.toFixed(2)}`;
+                document.getElementById('monthIncome').textContent = `৳${stats.totalIncome.toFixed(2)}`;
+                document.getElementById('availableBalance').textContent = `৳${stats.availableBalance.toFixed(2)}`;
+                document.getElementById('endBalance').textContent = month.endBalance !== null ? `৳${month.endBalance.toFixed(2)}` : '-';
+                document.getElementById('monthlyCost').textContent = `৳${stats.monthlyCost.toFixed(2)}`;
+                document.getElementById('untracked').textContent = `৳${stats.untracked.toFixed(2)}`;
+            },
+
+            renderOverallBalance() {
+                const { overallBalance, allIncome, allExpenses } = CalculationModule.calculateOverallBalance();
+                
+                document.getElementById('overallBalance').textContent = `৳${overallBalance.toFixed(2)}`;
+                document.getElementById('totalIncome').textContent = `৳${allIncome.toFixed(2)}`;
+                document.getElementById('totalExpenses').textContent = `৳${allExpenses.toFixed(2)}`;
+            },
+
+            renderAlertAndButton(month) {
+                const alertContainer = document.getElementById('alertContainer');
+                const finalizeBtn = document.getElementById('finalizeBtn');
+                const isCurrentMonth = DataModule.appData.currentMonthIndex === DataModule.appData.months.length - 1;
+                const now = new Date();
+                const currentDay = now.getDate();
+                const isAfter25th = currentDay >= 25;
+
+                if (month.finalized) {
+                    finalizeBtn.textContent = '✓ Month Finalized';
+                    finalizeBtn.disabled = true;
+                    alertContainer.innerHTML = '<div class="alert" style="background: #d4edda; border-color: #c3e6cb; color: #155724;">✓ This month has been finalized.</div>';
+                } else if (isCurrentMonth && isAfter25th) {
+                    finalizeBtn.textContent = 'Finalize Month';
+                    finalizeBtn.disabled = false;
+                    alertContainer.innerHTML = '<div class="alert">⚠️ It\'s after the 25th. You can now finalize this month!</div>';
+                } else if (isCurrentMonth && !isAfter25th) {
+                    finalizeBtn.disabled = true;
+                    finalizeBtn.textContent = `Finalize Available After 25th (Day ${currentDay}/25)`;
+                    alertContainer.innerHTML = '';
+                } else {
+                    finalizeBtn.textContent = 'Finalize Month';
+                    finalizeBtn.disabled = false;
+                    alertContainer.innerHTML = '<div class="alert">⚠️ This month needs to be finalized before creating a new one.</div>';
+                }
+            },
+
+            renderTransactions(month) {
+                this.renderTransactionList('incomeList', month.income, 'income');
+                this.renderTransactionList('expenseList', month.expenses, 'expense');
+            },
+
+            renderTransactionList(containerId, transactions, type) {
+                const container = document.getElementById(containerId);
+                
+                if (transactions.length === 0) {
+                    const icon = type === 'income' ? '📥' : '📤';
+                    const text = type === 'income' ? 'No income recorded yet' : 'No expenses recorded yet';
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">${icon}</div>
+                            <p>${text}</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = transactions.map((t, i) => `
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <div class="transaction-name">${t.name}</div>
+                                <div class="transaction-date">${t.date}</div>
+                            </div>
+                            <div class="transaction-right">
+                                <div class="transaction-amount ${type}">
+                                    ${type === 'income' ? '+' : '-'}৳${t.amount.toFixed(2)}
+                                </div>
+                                <div class="transaction-actions">
+                                    <button class="action-btn edit" onclick="TransactionModule.editTransaction('${type}', ${i})" title="Edit">✏️</button>
+                                    <button class="action-btn delete" onclick="TransactionModule.confirmDelete('${type}', ${i})" title="Delete">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        };
+
+        // ==================== TRANSACTION MODULE ====================
+        window.TransactionModule = {
+            currentType: '',
+            editingIndex: null,
+
+            openModal(type, index = null) {
+                this.currentType = type;
+                this.editingIndex = index;
+                
+                const modal = document.getElementById('transactionModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const submitBtn = document.getElementById('submitBtn');
+                const deleteBtn = document.getElementById('deleteBtn');
+                
+                if (index !== null) {
+                    // Edit mode
+                    const month = DataModule.getCurrentMonth();
+                    const transaction = type === 'income' ? month.income[index] : month.expenses[index];
+                    
+                    modalTitle.textContent = type === 'income' ? 'Edit Income' : 'Edit Expense';
+                    document.getElementById('transactionName').value = transaction.name;
+                    document.getElementById('transactionAmount').value = transaction.amount;
+                    document.getElementById('transactionDate').value = transaction.date;
+                    submitBtn.textContent = 'Update Transaction';
+                    deleteBtn.style.display = 'block';
+                } else {
+                    // Add mode
+                    modalTitle.textContent = type === 'income' ? 'Add Income' : 'Add Expense';
+                    document.getElementById('transactionForm').reset();
+                    document.getElementById('transactionDate').valueAsDate = new Date();
+                    submitBtn.textContent = 'Add Transaction';
+                    deleteBtn.style.display = 'none';
+                }
+                
+                modal.style.display = 'flex';
+            },
+
+            closeModal() {
+                document.getElementById('transactionModal').style.display = 'none';
+                document.getElementById('transactionForm').reset();
+                this.editingIndex = null;
+            },
+
+            editTransaction(type, index) {
+                this.openModal(type, index);
+            },
+
+            confirmDelete(type, index) {
+                if (confirm('Are you sure you want to delete this transaction?')) {
+                    DataModule.deleteTransaction(type, index);
+                    UIModule.renderApp();
+                }
+            },
+
+            deleteTransaction() {
+                if (confirm('Are you sure you want to delete this transaction?')) {
+                    DataModule.deleteTransaction(this.currentType, this.editingIndex);
+                    this.closeModal();
+                    UIModule.renderApp();
+                }
+            },
+
+            submitTransaction(e) {
+                e.preventDefault();
+                
+                const transaction = {
+                    name: document.getElementById('transactionName').value,
+                    amount: parseFloat(document.getElementById('transactionAmount').value),
+                    date: document.getElementById('transactionDate').value
+                };
+
+                if (this.editingIndex !== null) {
+                    DataModule.updateTransaction(this.currentType, this.editingIndex, transaction);
+                } else {
+                    DataModule.addTransaction(this.currentType, transaction);
+                }
+
+                this.closeModal();
+                UIModule.renderApp();
+            }
+        };
+
+        // ==================== NAVIGATION MODULE ====================
+        window.NavigationModule = {
+            prevMonth() {
+                if (DataModule.appData.currentMonthIndex > 0) {
+                    DataModule.appData.currentMonthIndex--;
+                    UIModule.renderApp();
+                }
+            },
+
+            nextMonth() {
+                const currentMonth = DataModule.getCurrentMonth();
+                if (DataModule.appData.currentMonthIndex < DataModule.appData.months.length - 1) {
+                    DataModule.appData.currentMonthIndex++;
+                    UIModule.renderApp();
+                } else if (currentMonth.finalized && currentMonth.endBalance !== null) {
+                    this.createNewMonth(currentMonth);
+                } else {
+                    alert('⚠️ Please finalize the current month before creating a new one!');
+                }
+            },
+
+            createNewMonth(prevMonth) {
+                const date = new Date(prevMonth.year, prevMonth.month + 1, 1);
+                DataModule.appData.months.push({
+                    month: date.getMonth(),
+                    year: date.getFullYear(),
+                    startBalance: prevMonth.endBalance,
+                    endBalance: null,
+                    income: [],
+                    expenses: [],
+                    finalized: false
+                });
+                DataModule.appData.currentMonthIndex++;
+                DataModule.saveData();
+                UIModule.renderApp();
+            }
+        };
+
+        // ==================== MONTH MODULE ====================
+        window.MonthModule = {
+            finalizeMonth() {
+                const month = DataModule.getCurrentMonth();
+                
+                if (month.finalized) {
+                    alert('This month is already finalized and locked.');
+                    return;
+                }
+
+                const endBalance = prompt('Enter the actual end balance for this month (৳):');
+                if (endBalance !== null && endBalance !== '') {
+                    month.endBalance = parseFloat(endBalance);
+                    month.finalized = true;
+                    DataModule.saveData();
+                    UIModule.renderApp();
+                    alert('✓ Month finalized successfully! You can now create the next month.');
+                }
+            }
+        };
+
+        // ==================== EVENT LISTENERS ====================
+        document.getElementById('initialBalanceForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const initialBalance = parseFloat(document.getElementById('initialBalance').value);
+            DataModule.initializeFirstMonth(initialBalance);
+            document.getElementById('initialBalanceScreen').style.display = 'none';
+            AuthModule.loadApp();
+        });
+
+        document.getElementById('transactionForm').addEventListener('submit', (e) => {
+            TransactionModule.submitTransaction(e);
+        });
+
+        // ==================== AUTH STATE LISTENER ====================
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                DataModule.currentUser = user;
+                AuthModule.checkFirstTimeUser();
+            }
+        });
+
+        // ==================== SERVICE WORKER FOR PWA ====================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(
+                    (registration) => console.log('Service Worker registered:', registration),
+                    (error) => console.log('Service Worker registration failed:', error)
+                );
+            });
+        }
+    </script>
+</body>
+</html>
