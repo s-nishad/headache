@@ -1,27 +1,28 @@
-name: Deploy to GitHub Pages
+name: Deploy HEADACHE PWA to GitHub Pages
+
 on:
   push:
     branches:
-      - main
+      - main  # Deploy when you push to main branch
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout the repo
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2️⃣ Build step (skip if static HTML)
       - name: Build project
-        run: |
-          # if you use a build step (npm, vite, etc.) run it here
-          # for static HTML, just skip
-          echo "No build step needed"
+        run: echo "Static site, no build needed"
 
-      - name: Deploy to public repo
+      # 3️⃣ Deploy all repo files to gh-pages branch
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.DEPLOY_TOKEN }}
-          external_repository: s-nishad/headache
+          personal_token: ${{ secrets.DEPLOY_TOKEN }}  # PAT stored as repo secret
+          external_repository: s-nishad/headache       # Target public repo
           publish_branch: gh-pages
-          publish_dir: ./
+          publish_dir: ./                               # Deploy the entire repo
