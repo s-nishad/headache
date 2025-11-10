@@ -9,13 +9,13 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/assets/icon/money_bag_color.svg",
+      "src": "/headache/assets/icon/money_bag_color.svg",
       "type": "image/svg+xml",
       "sizes": "any",
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/icon/money_bag_3d.png",
+      "src": "/headache/assets/icon/money_bag_3d.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
