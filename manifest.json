@@ -9,7 +9,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/headache/assets/icon/money_bag_color.svg",
+      "src": "https://raw.githubusercontent.com/microsoft/fluentui-emoji/refs/heads/main/assets/Money%20bag/Flat/money_bag_flat.svg",
       "type": "image/svg+xml",
       "sizes": "any",
       "purpose": "any maskable"
