@@ -1,72 +1,38 @@
-const CACHE_NAME = 'headache-manager-v2';
+const CACHE_NAME = 'headache-manager-v1';
 const urlsToCache = [
-  '/headache/',                             
-  '/headache/index.html',               
-  '/headache/manifest.json',                 
-  '/headache/assets/icon/money_bag_3d.png',
-  '/headache/assets/icon/money_bag_color.svg',
-  '/headache/assets/css/style.css', 
+  '/headache/',
+  '/headache/index.html',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
 ];
 
+// Install Service Worker
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(async cache => {
-        console.log('Caching app shell...');
-
-        // Cache one by one with error handling
-        for (const url of urlsToCache) {
-          try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            await cache.put(url, response);
-            console.log('Cached:', url);
-          } catch (err) {
-            console.warn('Failed to cache:', url, err);
-            // Continue — don't break install
-          }
-        }
-      })
-      .catch(err => {
-        console.error('Install failed:', err);
-      })
-  );
-
-  // Force new SW to activate immediately
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(names => {
-      return Promise.all(
-        names.map(name => {
-          if (name !== CACHE_NAME) {
-            console.log('Deleting old cache:', name);
-            return caches.delete(name);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
+// Fetch from cache
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-
-  // Serve HTML from cache for navigation
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      caches.match('/headache/index.html')
-        .then(cached => cached || fetch(event.request))
-    );
-    return;
-  }
-
-  // Serve other cached assets
   event.respondWith(
     caches.match(event.request)
-      .then(cached => cached || fetch(event.request))
+      .then(response => response || fetch(event.request))
+  );
+});
+
+// Update Service Worker
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames =>
+      Promise.all(
+        cacheNames.map(cacheName => {
+          if (!cacheWhitelist.includes(cacheName)) {
+            return caches.delete(cacheName);
+          }
+        })
+      )
+    )
   );
 });

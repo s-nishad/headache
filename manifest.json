@@ -9,15 +9,14 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/microsoft/fluentui-emoji/refs/heads/main/assets/Money%20bag/Flat/money_bag_flat.svg",
+      "src": "https://raw.githubusercontent.com/microsoft/fluentui-emoji/refs/heads/main/assets/Money%20bag/Color/money_bag_color.svg",
       "type": "image/svg+xml",
-      "sizes": "any",
       "purpose": "any maskable"
     },
     {
-      "src": "/headache/assets/icon/money_bag_3d.png",
-      "type": "image/png",
+      "src": "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Money%20bag/Color/money_bag_color.png",
       "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
