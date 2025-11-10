@@ -691,6 +691,8 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as firebaseSignOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
 
         // Firebase configuration - REPLACE WITH YOUR CONFIG
         const firebaseConfig = {
@@ -705,7 +707,10 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
+
+        let unsubscribeFirestore = null;
 
         // ==================== DATA MODULE ====================
         const DataModule = {
@@ -715,19 +720,128 @@
                 currentMonthIndex: 0
             },
 
-            saveData() {
-                if (!this.currentUser) return;
-                localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+            updateSyncStatus(status) {
+                const syncStatus = document.getElementById('syncStatus');
+                if (!syncStatus) return;
+
+                syncStatus.classList.remove('syncing');
+                
+                if (status === 'syncing') {
+                    syncStatus.innerHTML = '🔄 Syncing...';
+                    syncStatus.classList.add('syncing');
+                } else if (status === 'synced') {
+                    syncStatus.innerHTML = '☁️ Synced';
+                    setTimeout(() => {
+                        syncStatus.classList.remove('syncing');
+                    }, 100);
+                } else if (status === 'offline') {
+                    syncStatus.innerHTML = '📱 Offline';
+                }
             },
 
-            loadData() {
-                if (!this.currentUser) return false;
-                const saved = localStorage.getItem(`moneyManager_${this.currentUser.uid}`);
-                if (saved) {
-                    this.appData = JSON.parse(saved);
-                    return true;
+
+            // saveData() {
+            //     if (!this.currentUser) return;
+            //     localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+            // },
+
+            async saveData() {
+                if (!this.currentUser) return;
+                
+                this.updateSyncStatus('syncing');
+                
+                try {
+                    // Save to Firestore
+                    const userDocRef = doc(db, 'users', this.currentUser.uid);
+                    await setDoc(userDocRef, {
+                        appData: this.appData,
+                        lastUpdated: new Date().toISOString()
+                    });
+                    
+                    // Also save to localStorage as backup
+                    localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+                    
+                    this.updateSyncStatus('synced');
+                    console.log('✅ Data synced to cloud');
+                } catch (error) {
+                    console.error('❌ Sync error:', error);
+                    // Fallback to localStorage only
+                    localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+                    this.updateSyncStatus('offline');
                 }
-                return false;
+            },
+
+            async loadData() {
+                if (!this.currentUser) return false;
+                
+                try {
+                    // Try loading from Firestore first
+                    const userDocRef = doc(db, 'users', this.currentUser.uid);
+                    const docSnap = await getDoc(userDocRef);
+                    
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        this.appData = data.appData;
+                        // Update localStorage with cloud data
+                        localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+                        console.log('✅ Data loaded from cloud');
+                        return true;
+                    } else {
+                        // Try localStorage as fallback
+                        const saved = localStorage.getItem(`moneyManager_${this.currentUser.uid}`);
+                        if (saved) {
+                            this.appData = JSON.parse(saved);
+                            // Upload to cloud
+                            await this.saveData();
+                            console.log('✅ Local data uploaded to cloud');
+                            return true;
+                        }
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('❌ Load error:', error);
+                    // Fallback to localStorage
+                    const saved = localStorage.getItem(`moneyManager_${this.currentUser.uid}`);
+                    if (saved) {
+                        this.appData = JSON.parse(saved);
+                        console.log('✅ Data loaded from local storage');
+                        return true;
+                    }
+                    return false;
+                }
+            },
+
+            setupRealtimeSync() {
+                if (!this.currentUser || unsubscribeSnapshot) return;
+                
+                const userDocRef = doc(db, 'users', this.currentUser.uid);
+                
+                // Listen for real-time updates from other devices
+                unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
+                    if (doc.exists()) {
+                        const data = doc.data();
+                        const cloudData = JSON.stringify(data.appData);
+                        const localData = JSON.stringify(this.appData);
+                        
+                        // Only update if data changed
+                        if (cloudData !== localData) {
+                            this.appData = data.appData;
+                            localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+                            UIModule.renderApp();
+                            console.log('🔄 Synced from another device');
+                        }
+                    }
+                }, (error) => {
+                    console.error('❌ Real-time sync error:', error);
+                    this.updateSyncStatus('offline');
+                });
+            },
+
+            stopRealtimeSync() {
+                if (unsubscribeSnapshot) {
+                    unsubscribeSnapshot();
+                    unsubscribeSnapshot = null;
+                }
             },
 
             initializeFirstMonth(initialBalance) {
@@ -782,7 +896,7 @@
         // ==================== AUTH MODULE ====================
         window.AuthModule = {
             // ADD YOUR EMAIL HERE - Only this email can access the app
-            ALLOWED_EMAIL: 'shohanurnishad@gmail.com', // ⚠️ CHANGE THIS TO YOUR EMAIL
+            ALLOWED_EMAIL: 'shohanurnishad@gmail.com',
 
             async signInWithGoogle() {
                 try {
@@ -1155,7 +1269,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(
-                    (registration) => console.log('Service Worker registered:', registration),
+                    (registration) => console.log('✅ Service Worker registered'),
                     (error) => console.log('Service Worker registration failed:', error)
                 );
             });
