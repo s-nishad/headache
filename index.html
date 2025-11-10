@@ -7,540 +7,9 @@
     <meta name="description" content="Personal Headache Manager - Track your finances month by month">
     <title>Headache Manager</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Money%20bag/3D/money_bag_3d.png">
+    <link rel="apple-touch-icon" href="/assets/icon/money_bag_3d.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 420px;
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            min-height: 90vh;
-        }
-
-        /* Login Screen */
-        .login-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 30px;
-            min-height: 90vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .logo {
-            width: 80px;
-            height: 80px;
-            background: white;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .login-title {
-            color: white;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .login-subtitle {
-            color: rgba(255,255,255,0.9);
-            font-size: 16px;
-            margin-bottom: 50px;
-            text-align: center;
-        }
-
-        .google-btn {
-            background: white;
-            color: #333;
-            border: none;
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .google-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-
-        .google-icon {
-            width: 24px;
-            height: 24px;
-        }
-
-        /* Initial Balance Screen */
-        .initial-balance-screen {
-            display: none;
-            padding: 40px 30px;
-            min-height: 90vh;
-            background: white;
-        }
-
-        .initial-balance-screen h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .initial-balance-screen p {
-            color: #6c757d;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-
-        .initial-balance-icon {
-            font-size: 80px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        /* Main App */
-        .main-app {
-            display: none;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 30px 20px 40px;
-            color: white;
-            position: relative;
-        }
-
-        .user-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .balance-card {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .balance-label {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 8px;
-        }
-
-        .balance-amount {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-
-        .balance-details {
-            display: flex;
-            gap: 16px;
-            font-size: 13px;
-        }
-
-        .balance-item {
-            flex: 1;
-        }
-
-        .balance-item-label {
-            opacity: 0.8;
-            margin-bottom: 4px;
-        }
-
-        .balance-item-value {
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        /* Content */
-        .content {
-            padding: 20px;
-        }
-
-        .month-selector {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            background: #f8f9fa;
-            padding: 16px;
-            border-radius: 12px;
-        }
-
-        .month-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .month-nav {
-            display: flex;
-            gap: 8px;
-        }
-
-        .nav-btn {
-            background: white;
-            border: 1px solid #e0e0e0;
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: all 0.2s;
-        }
-
-        .nav-btn:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .alert {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            padding: 12px 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #856404;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: #f8f9fa;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid #e9ecef;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #6c757d;
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #333;
-        }
-
-        .stat-value.income {
-            color: #28a745;
-        }
-
-        .stat-value.expense {
-            color: #dc3545;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .add-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            transition: transform 0.2s;
-        }
-
-        .add-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .transaction-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 24px;
-        }
-
-        .transaction-item {
-            background: white;
-            border: 1px solid #e9ecef;
-            padding: 16px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: box-shadow 0.2s;
-            position: relative;
-        }
-
-        .transaction-item:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .transaction-info {
-            flex: 1;
-        }
-
-        .transaction-name {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .transaction-date {
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        .transaction-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .transaction-amount {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .transaction-amount.income {
-            color: #28a745;
-        }
-
-        .transaction-amount.expense {
-            color: #dc3545;
-        }
-
-        .transaction-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            transition: background 0.2s;
-        }
-
-        .action-btn.edit:hover {
-            background: #e3f2fd;
-            color: #2196f3;
-        }
-
-        .action-btn.delete:hover {
-            background: #ffebee;
-            color: #f44336;
-        }
-
-        .finalize-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            transition: transform 0.2s;
-        }
-
-        .finalize-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-        }
-
-        .finalize-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-            opacity: 0.6;
-            box-shadow: none;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: flex-end;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            width: 100%;
-            max-width: 420px;
-            border-radius: 24px 24px 0 0;
-            padding: 24px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #333;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #6c757d;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .submit-btn {
-            width: 100%;
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .delete-btn {
-            width: 100%;
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6c757d;
-        }
-
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
     <div class="app-container">
@@ -578,7 +47,10 @@
         <div class="main-app" id="mainApp">
             <div class="header">
                 <div class="user-info">
-                    <img src="" alt="User" class="user-avatar" id="userAvatar">
+                    <div class="user-left">
+                        <img src="" alt="User" class="user-avatar" id="userAvatar">
+                        <div class="sync-status" id="syncStatus">☁️ Synced</div>
+                    </div>
                     <button class="logout-btn" onclick="AuthModule.signOut()">Logout</button>
                 </div>
                 <div class="balance-card">
@@ -691,8 +163,9 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as firebaseSignOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-        // Firebase configuration - REPLACE WITH YOUR CONFIG
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCQnS-APMak4tJdpJWXkLgP-GWnJm0p7jw",
             authDomain: "headache-dae8e.firebaseapp.com",
@@ -705,7 +178,10 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
+
+        let unsubscribeSnapshot = null;
 
         // ==================== DATA MODULE ====================
         const DataModule = {
@@ -715,22 +191,125 @@
                 currentMonthIndex: 0
             },
 
-            saveData() {
-                if (!this.currentUser) return;
-                localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
-            },
+            updateSyncStatus(status) {
+                const syncStatus = document.getElementById('syncStatus');
+                if (!syncStatus) return;
 
-            loadData() {
-                if (!this.currentUser) return false;
-                const saved = localStorage.getItem(`moneyManager_${this.currentUser.uid}`);
-                if (saved) {
-                    this.appData = JSON.parse(saved);
-                    return true;
+                syncStatus.classList.remove('syncing');
+                
+                if (status === 'syncing') {
+                    syncStatus.innerHTML = '🔄 Syncing...';
+                    syncStatus.classList.add('syncing');
+                } else if (status === 'synced') {
+                    syncStatus.innerHTML = '☁️ Synced';
+                    setTimeout(() => {
+                        syncStatus.classList.remove('syncing');
+                    }, 100);
+                } else if (status === 'offline') {
+                    syncStatus.innerHTML = '📱 Offline';
                 }
-                return false;
             },
 
-            initializeFirstMonth(initialBalance) {
+            async saveData() {
+                if (!this.currentUser) return;
+                
+                this.updateSyncStatus('syncing');
+                
+                try {
+                    // Save to Firestore
+                    const userDocRef = doc(db, 'users', this.currentUser.uid);
+                    await setDoc(userDocRef, {
+                        appData: this.appData,
+                        lastUpdated: new Date().toISOString()
+                    });
+                    
+                    // Also save to localStorage as backup
+                    localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+                    
+                    this.updateSyncStatus('synced');
+                    console.log('✅ Data synced to cloud');
+                } catch (error) {
+                    console.error('❌ Sync error:', error);
+                    // Fallback to localStorage only
+                    localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+                    this.updateSyncStatus('offline');
+                }
+            },
+
+            async loadData() {
+                if (!this.currentUser) return false;
+                
+                try {
+                    // Try loading from Firestore first
+                    const userDocRef = doc(db, 'users', this.currentUser.uid);
+                    const docSnap = await getDoc(userDocRef);
+                    
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        this.appData = data.appData;
+                        // Update localStorage with cloud data
+                        localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+                        console.log('✅ Data loaded from cloud');
+                        return true;
+                    } else {
+                        // Try localStorage as fallback
+                        const saved = localStorage.getItem(`moneyManager_${this.currentUser.uid}`);
+                        if (saved) {
+                            this.appData = JSON.parse(saved);
+                            // Upload to cloud
+                            await this.saveData();
+                            console.log('✅ Local data uploaded to cloud');
+                            return true;
+                        }
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('❌ Load error:', error);
+                    // Fallback to localStorage
+                    const saved = localStorage.getItem(`moneyManager_${this.currentUser.uid}`);
+                    if (saved) {
+                        this.appData = JSON.parse(saved);
+                        console.log('✅ Data loaded from local storage');
+                        return true;
+                    }
+                    return false;
+                }
+            },
+
+            setupRealtimeSync() {
+                if (!this.currentUser || unsubscribeSnapshot) return;
+                
+                const userDocRef = doc(db, 'users', this.currentUser.uid);
+                
+                // Listen for real-time updates from other devices
+                unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
+                    if (doc.exists()) {
+                        const data = doc.data();
+                        const cloudData = JSON.stringify(data.appData);
+                        const localData = JSON.stringify(this.appData);
+                        
+                        // Only update if data changed
+                        if (cloudData !== localData) {
+                            this.appData = data.appData;
+                            localStorage.setItem(`moneyManager_${this.currentUser.uid}`, JSON.stringify(this.appData));
+                            UIModule.renderApp();
+                            console.log('🔄 Synced from another device');
+                        }
+                    }
+                }, (error) => {
+                    console.error('❌ Real-time sync error:', error);
+                    this.updateSyncStatus('offline');
+                });
+            },
+
+            stopRealtimeSync() {
+                if (unsubscribeSnapshot) {
+                    unsubscribeSnapshot();
+                    unsubscribeSnapshot = null;
+                }
+            },
+
+            async initializeFirstMonth(initialBalance) {
                 const now = new Date();
                 this.appData.months = [{
                     month: now.getMonth(),
@@ -741,54 +320,52 @@
                     expenses: [],
                     finalized: false
                 }];
-                this.saveData();
+                await this.saveData();
             },
 
             getCurrentMonth() {
                 return this.appData.months[this.appData.currentMonthIndex];
             },
 
-            addTransaction(type, transaction) {
+            async addTransaction(type, transaction) {
                 const month = this.getCurrentMonth();
                 if (type === 'income') {
                     month.income.push(transaction);
                 } else {
                     month.expenses.push(transaction);
                 }
-                this.saveData();
+                await this.saveData();
             },
 
-            updateTransaction(type, index, transaction) {
+            async updateTransaction(type, index, transaction) {
                 const month = this.getCurrentMonth();
                 if (type === 'income') {
                     month.income[index] = transaction;
                 } else {
                     month.expenses[index] = transaction;
                 }
-                this.saveData();
+                await this.saveData();
             },
 
-            deleteTransaction(type, index) {
+            async deleteTransaction(type, index) {
                 const month = this.getCurrentMonth();
                 if (type === 'income') {
                     month.income.splice(index, 1);
                 } else {
                     month.expenses.splice(index, 1);
                 }
-                this.saveData();
+                await this.saveData();
             }
         };
 
         // ==================== AUTH MODULE ====================
         window.AuthModule = {
-            // ADD YOUR EMAIL HERE - Only this email can access the app
-            ALLOWED_EMAIL: 'shohanurnishad@gmail.com', // ⚠️ CHANGE THIS TO YOUR EMAIL
+            ALLOWED_EMAIL: 'shohanurnishad@gmail.com',
 
             async signInWithGoogle() {
                 try {
                     const result = await signInWithPopup(auth, provider);
                     
-                    // Check if user is authorized
                     if (result.user.email !== this.ALLOWED_EMAIL) {
                         await firebaseSignOut(auth);
                         alert('⛔ Access Denied! This app is for personal use only.');
@@ -796,7 +373,7 @@
                     }
                     
                     DataModule.currentUser = result.user;
-                    this.checkFirstTimeUser();
+                    await this.checkFirstTimeUser();
                 } catch (error) {
                     console.error('Login error:', error);
                     alert('Login failed. Please try again.');
@@ -805,6 +382,7 @@
 
             async signOut() {
                 try {
+                    DataModule.stopRealtimeSync();
                     await firebaseSignOut(auth);
                     document.getElementById('loginScreen').style.display = 'flex';
                     document.getElementById('mainApp').style.display = 'none';
@@ -813,8 +391,8 @@
                 }
             },
 
-            checkFirstTimeUser() {
-                const hasData = DataModule.loadData();
+            async checkFirstTimeUser() {
+                const hasData = await DataModule.loadData();
                 if (!hasData) {
                     document.getElementById('loginScreen').style.display = 'none';
                     document.getElementById('initialBalanceScreen').style.display = 'block';
@@ -828,6 +406,7 @@
                 document.getElementById('initialBalanceScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
                 document.getElementById('userAvatar').src = DataModule.currentUser.photoURL || 'https://via.placeholder.com/40';
+                DataModule.setupRealtimeSync();
                 UIModule.renderApp();
             }
         };
@@ -1004,7 +583,6 @@
                 const deleteBtn = document.getElementById('deleteBtn');
                 
                 if (index !== null) {
-                    // Edit mode
                     const month = DataModule.getCurrentMonth();
                     const transaction = type === 'income' ? month.income[index] : month.expenses[index];
                     
@@ -1015,7 +593,6 @@
                     submitBtn.textContent = 'Update Transaction';
                     deleteBtn.style.display = 'block';
                 } else {
-                    // Add mode
                     modalTitle.textContent = type === 'income' ? 'Add Income' : 'Add Expense';
                     document.getElementById('transactionForm').reset();
                     document.getElementById('transactionDate').valueAsDate = new Date();
@@ -1036,22 +613,22 @@
                 this.openModal(type, index);
             },
 
-            confirmDelete(type, index) {
+            async confirmDelete(type, index) {
                 if (confirm('Are you sure you want to delete this transaction?')) {
-                    DataModule.deleteTransaction(type, index);
+                    await DataModule.deleteTransaction(type, index);
                     UIModule.renderApp();
                 }
             },
 
-            deleteTransaction() {
+            async deleteTransaction() {
                 if (confirm('Are you sure you want to delete this transaction?')) {
-                    DataModule.deleteTransaction(this.currentType, this.editingIndex);
+                    await DataModule.deleteTransaction(this.currentType, this.editingIndex);
                     this.closeModal();
                     UIModule.renderApp();
                 }
             },
 
-            submitTransaction(e) {
+            async submitTransaction(e) {
                 e.preventDefault();
                 
                 const transaction = {
@@ -1061,9 +638,9 @@
                 };
 
                 if (this.editingIndex !== null) {
-                    DataModule.updateTransaction(this.currentType, this.editingIndex, transaction);
+                    await DataModule.updateTransaction(this.currentType, this.editingIndex, transaction);
                 } else {
-                    DataModule.addTransaction(this.currentType, transaction);
+                    await DataModule.addTransaction(this.currentType, transaction);
                 }
 
                 this.closeModal();
@@ -1092,7 +669,7 @@
                 }
             },
 
-            createNewMonth(prevMonth) {
+            async createNewMonth(prevMonth) {
                 const date = new Date(prevMonth.year, prevMonth.month + 1, 1);
                 DataModule.appData.months.push({
                     month: date.getMonth(),
@@ -1104,14 +681,14 @@
                     finalized: false
                 });
                 DataModule.appData.currentMonthIndex++;
-                DataModule.saveData();
+                await DataModule.saveData();
                 UIModule.renderApp();
             }
         };
 
         // ==================== MONTH MODULE ====================
         window.MonthModule = {
-            finalizeMonth() {
+            async finalizeMonth() {
                 const month = DataModule.getCurrentMonth();
                 
                 if (month.finalized) {
@@ -1123,7 +700,7 @@
                 if (endBalance !== null && endBalance !== '') {
                     month.endBalance = parseFloat(endBalance);
                     month.finalized = true;
-                    DataModule.saveData();
+                    await DataModule.saveData();
                     UIModule.renderApp();
                     alert('✓ Month finalized successfully! You can now create the next month.');
                 }
@@ -1131,10 +708,10 @@
         };
 
         // ==================== EVENT LISTENERS ====================
-        document.getElementById('initialBalanceForm').addEventListener('submit', (e) => {
+        document.getElementById('initialBalanceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const initialBalance = parseFloat(document.getElementById('initialBalance').value);
-            DataModule.initializeFirstMonth(initialBalance);
+            await DataModule.initializeFirstMonth(initialBalance);
             document.getElementById('initialBalanceScreen').style.display = 'none';
             AuthModule.loadApp();
         });
@@ -1144,10 +721,10 @@
         });
 
         // ==================== AUTH STATE LISTENER ====================
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 DataModule.currentUser = user;
-                AuthModule.checkFirstTimeUser();
+                await AuthModule.checkFirstTimeUser();
             }
         });
 
@@ -1155,8 +732,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(
-                    (registration) => console.log('Service Worker registered:', registration),
-                    (error) => console.log('Service Worker registration failed:', error)
+                    (registration) => console.log('✅ Service Worker registered'),
+                    (error) => console.log('❌ Service Worker registration failed:', error)
                 );
             });
         }
