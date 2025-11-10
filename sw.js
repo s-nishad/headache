@@ -1,13 +1,12 @@
 const CACHE_NAME = 'headache-manager-v2';
 const urlsToCache = [
-  '/headache/',                             // For some servers
-  '/headache/index.html',                     // ONLY this is required
-  '/headache/manifest.json',                  // Must exist
-  '/headache/assets/icon/money-bag-color.svg', // Correct name + path
-  '/headache/assets/icon/money-bag-flat.svg'   // If you have it
-  // NO GOOGLE FONTS
-  // NO STYLES.CSS
-  // NO 3D PNG
+  '/headache/',                             
+  '/headache/index.html',               
+  '/headache/manifest.json',                 
+  '/headache/assets/icon/money_bag_3d.png',
+  '/headache/assets/icon/money_bag_color.svg',
+  '/headache/assets/css/style.css', 
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
 ];
 
 self.addEventListener('install', event => {
